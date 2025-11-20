@@ -1,27 +1,22 @@
 <?php
 session_start();
 
-// Cek apakah user sudah login
 if (isset($_SESSION['username'])) {
     header("Location: dashboard.php");
     exit;
 }
 
-// Proses login
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+$error = "";
+if (isset($_POST['login'])) {
+    $user = $_POST['username'];
+    $pass = $_POST['password'];
 
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    // Login sederhana (username: admin, password: 123)
-    if ($username == 'admin' && $password == '123') {
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = 'Dosen';
-
+    if ($user == "admin" && $pass == "1234") {
+        $_SESSION['username'] = $user;
         header("Location: dashboard.php");
         exit;
     } else {
-        $error = "Username atau password salah!";
+        $error = "Username atau Password salah!";
     }
 }
 ?>
@@ -29,27 +24,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="style.css">
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .card {
+        background: white;
+        padding: 30px;
+        width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #2563eb;
+        border: none;
+        color: white;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #1e40af;
+    }
+</style>
+
 </head>
 <body>
 
-    <h2>Form Login</h2>
+<div class="card">
+    <h2>Login Pengguna</h2>
 
-    <!-- Pesan error -->
-    <?php if (isset($error)): ?>
-        <p style="color:red;"><?php echo $error; ?></p>
-    <?php endif; ?>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
 
-    <form method="post">
-        username : 
-        <input type="text" name="username" required><br><br>
-
-        password : 
-        <input type="password" name="password" required><br><br>
-
-        <button type="submit">Login</button>
-        <button type="reset">Batal</button>
+        <button type="submit" name="login">Masuk</button>
     </form>
+</div>
+
+<?php if (!empty($error)) { ?>
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Login Gagal!',
+        text: '<?php echo $error; ?>',
+        confirmButtonColor: '#2563eb'
+    });
+</script>
+<?php } ?>
 
 </body>
 </html>
